@@ -239,7 +239,7 @@ extension IntroViewController: UIImagePickerControllerDelegate, UINavigationCont
             image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
         }
         if let image = image {
-            let vc = EditImageViewController(image: image, editModel: nil)
+            let vc = EditImageViewController(image: image)
             vc.modalPresentationStyle = .fullScreen
             self.present(vc, animated: true, completion: nil)
         }

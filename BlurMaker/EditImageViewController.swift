@@ -6,20 +6,12 @@ import SwiftEntryKit
 
 let H_00BF3C = #colorLiteral(red: 0, green: 0.7490196078, blue: 0.2352941176, alpha: 1)
 
-public class EditImageViewController: UIViewController {
+class EditImageViewController: UIViewController {
 
-    static let maxDrawLineImageWidth: CGFloat = 600
-    private var drawPaths: [ZLDrawPath] = []
-
-    var animate = false
-    
-    var originalImage: UIImage
-    
-    // 第一次进入界面时，布局后frame，裁剪dimiss动画使用
-    var originalFrame: CGRect = .zero
+    private var originalImage: UIImage
     
     // 图片可编辑rect
-    var editRect: CGRect
+    private var editRect: CGRect
 
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -46,7 +38,6 @@ public class EditImageViewController: UIViewController {
     }()
     
     private var blurContainer: DynamicBlurView = DynamicBlurView()
-    private var blurMaskLayer: CAShapeLayer = CAShapeLayer()
 
     private var systemBlurView = UIVisualEffectView()
     
@@ -94,7 +85,7 @@ public class EditImageViewController: UIViewController {
         return collectionView
     }()
 
-    var selectedTool: Section? {
+    private var selectedTool: Section? {
         didSet {
             guard selectedTool != oldValue else { return }
             guard let tool = selectedTool else { return }
@@ -128,45 +119,34 @@ public class EditImageViewController: UIViewController {
         return button
     }()
 
+    private var isScrolling = false
     
+    private var shouldLayout = true
 
-    var drawLineWidth: CGFloat = 5
-
-    var mosaicLineWidth: CGFloat = 10
-
-    var mosaicPaths: [ZLMosaicPath] = []
-
-    var isScrolling = false
+    private var angle: CGFloat
     
-    var shouldLayout = true
+    private var panGes: UIPanGestureRecognizer!
     
-    var imageStickerContainerIsHidden = true
-    
-    var angle: CGFloat
-    
-    var panGes: UIPanGestureRecognizer!
-    
-    var imageSize: CGSize {
+    private var imageSize: CGSize {
         if self.angle == -90 || self.angle == -270 {
             return CGSize(width: self.originalImage.size.height, height: self.originalImage.size.width)
         }
         return self.originalImage.size
     }
-    
-    @objc public var editFinishBlock: ( (UIImage, ZLEditImageModel?) -> Void )?
-    
-    public override var prefersStatusBarHidden: Bool {
+
+
+    override var prefersStatusBarHidden: Bool {
         return true
     }
     
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
     }
     
-    @objc public init(image: UIImage, editModel: ZLEditImageModel? = nil) {
+    init(image: UIImage) {
         self.originalImage = image
-        self.editRect = editModel?.editRect ?? CGRect(origin: .zero, size: image.size)
-        self.angle = editModel?.angle ?? 0
+        self.editRect = CGRect(origin: .zero, size: image.size)
+        self.angle = 0
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -174,7 +154,7 @@ public class EditImageViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         self.setupUI()
@@ -185,7 +165,7 @@ public class EditImageViewController: UIViewController {
     }
 
     private var isFirstDidAppear = true
-    public override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard isFirstDidAppear else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -199,7 +179,7 @@ public class EditImageViewController: UIViewController {
         isFirstDidAppear = false
     }
     
-    public override func viewDidLayoutSubviews() {
+    override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         self.topShadowLayer.frame = self.topShadowView.bounds
@@ -215,7 +195,7 @@ public class EditImageViewController: UIViewController {
 
     }
 
-    func resetContainerViewFrame() {
+    private func resetContainerViewFrame() {
         self.scrollView.setZoomScale(1, animated: true)
 
         let editSize = self.editRect.size
@@ -228,7 +208,6 @@ public class EditImageViewController: UIViewController {
         let scaleImageOrigin = CGPoint(x: -self.editRect.origin.x*ratio, y: -self.editRect.origin.y*ratio)
         let scaleImageSize = CGSize(width: self.imageSize.width * ratio, height: self.imageSize.height * ratio)
         self.imageView.frame = CGRect(origin: scaleImageOrigin, size: scaleImageSize)
-        self.blurMaskLayer.frame = self.imageView.bounds
 
         // 针对于长图的优化
         if (self.editRect.height / self.editRect.width) > (self.view.frame.height / self.view.frame.width * 1.1) {
@@ -239,8 +218,6 @@ public class EditImageViewController: UIViewController {
         } else if self.editRect.width / self.editRect.height > 1 {
             self.scrollView.maximumZoomScale = max(3, self.view.frame.height / h)
         }
-        
-        self.originalFrame = self.view.convert(self.containerView.frame, from: self.scrollView)
         self.isScrolling = false
     }
     
@@ -255,11 +232,6 @@ public class EditImageViewController: UIViewController {
         imageView.addSubview(systemBlurView)
 
         blurContainer.isDeepRendering = true
-//        blurContainer.layer.mask = blurMaskLayer
-        blurMaskLayer.strokeColor = UIColor.clear.cgColor
-        blurMaskLayer.fillColor = UIColor.blue.cgColor
-        blurMaskLayer.lineCap = .round
-        blurMaskLayer.lineJoin = .round
 
         blurContainer.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -309,7 +281,6 @@ public class EditImageViewController: UIViewController {
         }
 
         let tapGes = UITapGestureRecognizer(target: self, action: #selector(tapAction(_:)))
-        tapGes.delegate = self
         view.addGestureRecognizer(tapGes)
 
         chooseButton.addTarget(self, action: #selector(chooseBtnClick), for: .touchUpInside)
@@ -333,7 +304,7 @@ public class EditImageViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
 
-    @objc func doneBtnClick() {
+    @objc private func doneBtnClick() {
         guard let selectedTool = self.selectedTool else { return }
         var image: UIImage?
         switch selectedTool {
@@ -352,12 +323,12 @@ public class EditImageViewController: UIViewController {
             guard let self = self else { return }
             UIImageWriteToSavedPhotosAlbum(ei, self, #selector(self.image(image:didFinishSavingWithError:contextInfo:)), nil)
         }
-        vc.modalTransitionStyle = .crossDissolve
-        vc.modalPresentationStyle = .custom
-        self.present(vc, animated: animate, completion: nil)
+//        vc.modalTransitionStyle = .crossDissolve
+//        vc.modalPresentationStyle = .custom
+        self.present(vc, animated: true, completion: nil)
     }
 
-    @objc func tapAction(_ tap: UITapGestureRecognizer) {
+    @objc private func tapAction(_ tap: UITapGestureRecognizer) {
         if self.bottomShadowView.alpha == 1 {
             self.setToolView(show: false)
         } else {
@@ -420,73 +391,6 @@ public class EditImageViewController: UIViewController {
         )
         SwiftEntryKit.display(entry: contentView, using: .topNote)
     }
-
-//    private func generateNewMosaicImage() {
-//        UIGraphicsBeginImageContextWithOptions(self.originalImage.size, false, self.originalImage.scale)
-//        self.originalImage.draw(at: .zero)
-//        let context = UIGraphicsGetCurrentContext()
-//
-//        self.mosaicPaths.forEach { (path) in
-//            context?.move(to: path.startPoint)
-//            path.linePoints.forEach { (point) in
-//                context?.addLine(to: point)
-//            }
-//            context?.setLineWidth(path.path.lineWidth / path.ratio)
-//            context?.setLineCap(.round)
-//            context?.setLineJoin(.round)
-//            context?.setBlendMode(.clear)
-//            context?.strokePath()
-//        }
-//
-//        var midImage = UIGraphicsGetImageFromCurrentImageContext()
-//        UIGraphicsEndImageContext()
-//        guard let midCgImage = midImage?.cgImage else {
-//            return
-//        }
-//
-//        midImage = UIImage(cgImage: midCgImage, scale: self.editImage.scale, orientation: .up)
-//
-//        UIGraphicsBeginImageContextWithOptions(self.originalImage.size, false, self.originalImage.scale)
-//        self.mosaicImage?.draw(at: .zero)
-//        midImage?.draw(at: .zero)
-//
-//        let temp = UIGraphicsGetImageFromCurrentImageContext()
-//        UIGraphicsEndImageContext()
-//        guard let cgi = temp?.cgImage else {
-//            return
-//        }
-//        let image = UIImage(cgImage: cgi, scale: self.editImage.scale, orientation: .up)
-//
-//        self.editImage = image
-//        self.imageView.image = self.editImage
-//
-//        self.blurMaskLayer.path = nil
-//    }
-}
-
-
-extension EditImageViewController: UIGestureRecognizerDelegate {
-    
-//    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-//        guard self.imageStickerContainerIsHidden else {
-//            return false
-//        }
-//        if gestureRecognizer is UITapGestureRecognizer {
-//            if self.bottomShadowView.alpha == 1 {
-//                let p = gestureRecognizer.location(in: self.view)
-//                return !self.bottomShadowView.frame.contains(p)
-//            } else {
-//                return true
-//            }
-//        } else if gestureRecognizer is UIPanGestureRecognizer {
-//            guard let st = self.selectedTool else {
-//                return false
-//            }
-//            return !self.isScrolling
-//        }
-//        return true
-//    }
-//
 }
 
 extension EditImageViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
