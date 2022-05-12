@@ -80,7 +80,6 @@ class EditImageViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.isPagingEnabled = true
         collectionView.registerCell(EditImageBlurCell.self)
-        collectionView.registerCell(EditImageDrawCell.self)
         collectionView.registerCell(SystemBlurCell.self)
         return collectionView
     }()
@@ -318,14 +317,19 @@ class EditImageViewController: UIViewController {
             image = blurContainer.screenShot() ?? imageView.image
         }
         guard let tmpImage = image else { return }
-        let vc = ZLEditImageViewController(image: tmpImage, editModel: nil)
-        vc.editFinishBlock = { [weak self] (ei, editImageModel) in
+
+        ZLEditImageViewController.showEditImageVC(parentVC: self, image: tmpImage) { [weak self] (ei, editImageModel) in
             guard let self = self else { return }
             UIImageWriteToSavedPhotosAlbum(ei, self, #selector(self.image(image:didFinishSavingWithError:contextInfo:)), nil)
         }
-//        vc.modalTransitionStyle = .crossDissolve
-//        vc.modalPresentationStyle = .custom
-        self.present(vc, animated: true, completion: nil)
+//        let vc = ZLEditImageViewController(image: tmpImage, editModel: nil)
+//        vc.editFinishBlock = { [weak self] (ei, editImageModel) in
+//            guard let self = self else { return }
+//            UIImageWriteToSavedPhotosAlbum(ei, self, #selector(self.image(image:didFinishSavingWithError:contextInfo:)), nil)
+//        }
+////        vc.modalTransitionStyle = .crossDissolve
+////        vc.modalPresentationStyle = .custom
+//        self.present(vc, animated: true, completion: nil)
     }
 
     @objc private func tapAction(_ tap: UITapGestureRecognizer) {
