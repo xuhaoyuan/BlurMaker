@@ -369,11 +369,21 @@
 				DEVELOPMENT_TEAM = 7P6D54A8SR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BlurMaker/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Blur制造者";
+				INFOPLIST_KEY_NSCameraUsageDescription = "请允许使用相机拍摄照片，使用相册自定义图片添加Blur～";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "允许获取您的地理位置信息便于获取最新消息";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "允许获取您的地理位置信息便于获取最新消息";
+				INFOPLIST_KEY_NSLocationUsageDescription = "允许获取您的地理位置信息便于获取最新消息";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "使用您的位置信息便于获取最新消息";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "请允许使用您的麦克风进行语音识别";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "请允许使用相册，使用相册自定义图片添加Blur～";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "请允许使用相册，使用相册自定义图片添加Blur～";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -399,11 +409,21 @@
 				DEVELOPMENT_TEAM = 7P6D54A8SR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BlurMaker/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Blur制造者";
+				INFOPLIST_KEY_NSCameraUsageDescription = "请允许使用相机拍摄照片，使用相册自定义图片添加Blur～";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "允许获取您的地理位置信息便于获取最新消息";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "允许获取您的地理位置信息便于获取最新消息";
+				INFOPLIST_KEY_NSLocationUsageDescription = "允许获取您的地理位置信息便于获取最新消息";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "使用您的位置信息便于获取最新消息";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "请允许使用您的麦克风进行语音识别";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "请允许使用相册，使用相册自定义图片添加Blur～";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "请允许使用相册，使用相册自定义图片添加Blur～";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
